@@ -1,32 +1,24 @@
-cmake_minimum_required(VERSION 3.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.6)
 
 project(learn-opengl LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(TO_NATIVE_PATH "${STAGED_INSTALL_PREFIX}/lib/cmake/glfw3" glfw3_DIR)
-file(TO_NATIVE_PATH "${STAGED_INSTALL_PREFIX}/lib/cmake/glew" GLEW_DIR)
-
-message(STATUS "glfw3_DIR is... ${glfw3_DIR}")
-message(STATUS "GLEW_DIR is... ${GLEW_DIR}")
-
-find_package(glfw3 REQUIRED CONFIG)
-
-set(GLEW_USE_STATIC_LIBS ON)
-find_package(GLEW REQUIRED CONFIG)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLEW    REQUIRED IMPORTED_TARGET glew)
+pkg_check_modules(GLFW    REQUIRED IMPORTED_TARGET glfw3)
+pkg_check_modules(GLM    REQUIRED IMPORTED_TARGET glm)
 
 set(SRCS main.cpp)
 
-if(APPLE)
-    # create bundle on apple compiles
-    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SRCS})
+if (APPLE)
+    set(CMAKE_CXX_FLAGS "-framework Cocoa -framework IOKit -framework Foundation -framework OpenGL -framework CoreVideo")
+    add_compile_definitions(GL_SILENCE_DEPRECATION)
+    add_compile_options(-Wno-unused-command-line-argument)
+endif ()
 
-    # Set a custom plist file for the app bundle - needed for Mac OS Retina display
-    set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist)
-else()
-    # No WIN32! We don't want WinMain() with GLFW.
-    add_executable(${PROJECT_NAME} ${SRCS} main.exe.manifest)
-endif()
+include_directories(${CMAKE_SOURCE_DIR}/include)
+add_executable(${PROJECT_NAME}  ${SRCS})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::glew_s glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::GLEW PkgConfig::GLFW PkgConfig::GLM)

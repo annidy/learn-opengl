@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/build/subprojects/Build/glfw_opengl_cmake_template_core/learn-opengl.app/Contents/MacOS/learn-opengl",
+            "program": "${workspaceFolder}/build/src/learn-opengl",
             "args": [],
             "cwd": "${workspaceFolder}"
         }

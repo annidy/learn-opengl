@@ -24,13 +24,17 @@ constexpr auto vertexShaderSource = R"(
 constexpr auto fragmentShaderSource = R"(
     #version 330 core
 
-    layout(location = 0) out vec4 FragColor;
+    out vec4 FragColor;
 
     void main()
     {
         FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
     }
 )";
+
+enum VAO_IDs { Triangles, NumVAOs};
+enum Buffer_IDs { ArrayBuffer, NumBuffers };
+enum Attrib_IDs { vPosition, NumAttributes };
 
 unsigned int CompileShader(const std::string &source, unsigned int type)
 {
@@ -93,16 +97,9 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     
-    GLFWwindow *window = glfwCreateWindow(600, 480, "OpenGL + GLFW", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(600, 480, "OpenGL", NULL, NULL);
     if (window == NULL)
     {
-        const char *description;
-        int error = glfwGetError(&description);
-        if (error != GLFW_NO_ERROR)
-        {
-            fprintf(stderr, "GLFW Error: %s\n", description);
-        }
-
         glfwTerminate();
         return -1;
     }
@@ -120,15 +117,18 @@ int main()
     fprintf(stdout, "GL version: %s\n", glGetString(GL_VERSION));
 
     // glfwSetFramebufferSizeCallback(window, framebufferSizeChanged);
+    GLuint VAOs[NumVAOs];
+    glGenVertexArrays(1, VAOs);
+    glBindVertexArray(VAOs[Triangles]);
 
     float positions[6] = {
         -0.5f, -0.5f,
         0.5f, -0.5f,
         0.0f, 0.5f};
 
-    unsigned int buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLuint Buffers[NumBuffers];
+    glGenBuffers(NumBuffers, Buffers);
+    glBindBuffer(GL_ARRAY_BUFFER, Buffers[ArrayBuffer]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
@@ -145,6 +145,7 @@ int main()
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glBindVertexArray(VAOs[Triangles]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
@@ -154,7 +155,7 @@ int main()
         glfwPollEvents();
     }
 
-    // glDeleteVertexArrays(1, &VAO);
+    // glDeleteVertexArrays(1, &VAOs);
     // glDeleteBuffers(1, &VBO);
     glDeleteProgram(shaderProgram);
 
