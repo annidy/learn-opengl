@@ -26,9 +26,11 @@ constexpr auto fragmentShaderSource = R"(
 
     out vec4 FragColor;
 
+    uniform vec4 u_Color;
+
     void main()
     {
-        FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        FragColor = u_Color;
     }
 )";
 
@@ -149,6 +151,8 @@ int main()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), 0.0f, 0.3f, 0.0f, 1.0f);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -156,6 +160,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBindVertexArray(VAOs[Triangles]);
+
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
