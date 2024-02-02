@@ -149,7 +149,9 @@ int main()
     unsigned int shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
     glUseProgram(shaderProgram);
 
+    // 清空状态机
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0); 
 
     glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), 0.0f, 0.3f, 0.0f, 1.0f);
 
