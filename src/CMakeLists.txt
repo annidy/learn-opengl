@@ -10,7 +10,7 @@ pkg_check_modules(GLEW    REQUIRED IMPORTED_TARGET glew)
 pkg_check_modules(GLFW    REQUIRED IMPORTED_TARGET glfw3)
 pkg_check_modules(GLM    REQUIRED IMPORTED_TARGET glm)
 
-set(SRCS main.cpp)
+set(SRCS main.cpp Renderer.cpp VertexBuffer.cpp IndexBuffer.cpp VertexArray.cpp VertexBuffer.cpp)
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-framework Cocoa -framework IOKit -framework Foundation -framework OpenGL -framework CoreVideo")
