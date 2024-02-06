@@ -153,15 +153,26 @@ int main()
 
     glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), 0.0f, 0.3f, 0.0f, 1.0f);
 
+    float red = 0.0f;
+    float step = 0.05f;
+
+    Renderer renderer;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
 
-        va.Bind();
-        ib.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+        glUseProgram(shaderProgram);
+        glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), red, 0.3, 0.8, 1.0);
+
+        renderer.Draw(va, ib);
+
+        if (red > 1.0f)
+            step = -0.05f;
+        if (red < 0.0f)
+            step = 0.05f;
+        red += step;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
