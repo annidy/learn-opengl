@@ -14,71 +14,13 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
+#include "Shader.h"
 
-constexpr auto vertexShaderSource = R"(
-    #version 330 core
-    
-    layout (location = 0) in vec4 aPos;
-
-    void main()
-    {
-        gl_Position = aPos;
-    }
-)";
-
-constexpr auto fragmentShaderSource = R"(
-    #version 330 core
-
-    out vec4 FragColor;
-
-    uniform vec4 u_Color;
-
-    void main()
-    {
-        FragColor = u_Color;
-    }
-)";
 
 enum VAO_IDs { Triangles, NumVAOs};
 enum Buffer_IDs { ArrayBuffer, ElementBuffer, NumBuffers };
 enum Attrib_IDs { vPosition, NumAttributes };
 
-unsigned int CompileShader(const std::string &source, unsigned int type)
-{
-    unsigned int id = glCreateShader(type);
-    const char *src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char *message = (char *)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
-        std::cerr << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
-        std::cerr << message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-    return id;
-}
-
-unsigned int CreateShaderProgram(const std::string &vertexShaderSource, const std::string &fragmentShaderSource)
-{
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
-    unsigned int fs = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-    // Optional: Delete the shaders once linked
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-    return program;
-}
 
 void framebufferSizeChanged(GLFWwindow *window, int width, int height);
 
@@ -143,15 +85,15 @@ int main()
     };
     IndexBuffer ib(indices, 6);
 
-    unsigned int shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
-    glUseProgram(shaderProgram);
+    Shader shaderProgram("res/shaders/Basic.shader");
+    shaderProgram.Bind();
 
     // 清空状态机
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0); 
 
-    glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), 0.0f, 0.3f, 0.0f, 1.0f);
+    shaderProgram.SetUniform4f("u_Color", 0.0f, 0.3f, 0.0f, 1.0f);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -169,8 +111,6 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
-
-    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
     return 0;
