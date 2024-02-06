@@ -15,6 +15,7 @@
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 #include "Shader.h"
+#include "Texture.h"
 
 
 void framebufferSizeChanged(GLFWwindow *window, int width, int height);
@@ -97,7 +98,6 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0); 
 
-    shaderProgram.SetUniform4f("u_Color", 0.0f, 0.3f, 0.0f, 1.0f);
     shaderProgram.SetUniform1i("u_Texture", 0);
     shaderProgram.SetUniformMat4f("u_MVP", proj);
 
@@ -108,7 +108,7 @@ int main()
     {
         renderer.Clear();
 
-        renderer.Draw(va, ib);
+        renderer.Draw(va, ib, shaderProgram);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
