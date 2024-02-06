@@ -24,9 +24,11 @@ constexpr auto vertexShaderSource = R"(
 
     out vec2 v_TexCoord;
 
+    uniform mat4 u_MVP;
+
     void main()
     {
-        gl_Position = aPos;
+        gl_Position = u_MVP * aPos;
         v_TexCoord = texCoord;
     }
 )";
@@ -149,6 +151,8 @@ int main()
         2, 3, 0
     };
     IndexBuffer ib(indices, 6);
+    glm::mat4 proj = glm::ortho(-2.0f, 2.f, -.5f, .5f, -1.0f, 1.0f);
+
 
     unsigned int shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
     glUseProgram(shaderProgram);
@@ -162,6 +166,7 @@ int main()
     glBindVertexArray(0); 
 
     glUniform1i(glGetUniformLocation(shaderProgram, "u_Texture"), 0);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "u_MVP"), 1, GL_FALSE, &proj[0][0]);
 
     float red = 0.0f;
     float step = 0.05f;
