@@ -134,10 +134,10 @@ int main()
     // glfwSetFramebufferSizeCallback(window, framebufferSizeChanged);
 
     float positions[] = {
-        -0.5f, -0.5f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.0f, 1.0f  // 3
+        0.0f, 0.0f, 0.0f, 0.0f, // 0
+        600.0f, 0.0f, 1.0f, 0.0f, // 1
+        600.0f, 480.0f, 1.0f, 1.0f, // 2
+        0.0f, 480.0f, 0.0f, 1.0f  // 3
     };
     VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
@@ -151,13 +151,13 @@ int main()
         2, 3, 0
     };
     IndexBuffer ib(indices, 6);
-    glm::mat4 proj = glm::ortho(-2.0f, 2.f, -.5f, .5f, -1.0f, 1.0f);
+    glm::mat4 proj = glm::ortho(0.0f, 600.0f, 0.0f, 480.0f, -1.0f, 1.0f);
 
 
     unsigned int shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
     glUseProgram(shaderProgram);
 
-    Texture texture("res/textures/phone.png");
+    Texture texture("res/textures/gold-dollar.png");
     texture.Bind(0);
 
     // 清空状态机
