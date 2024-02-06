@@ -17,11 +17,6 @@
 #include "Shader.h"
 
 
-enum VAO_IDs { Triangles, NumVAOs};
-enum Buffer_IDs { ArrayBuffer, ElementBuffer, NumBuffers };
-enum Attrib_IDs { vPosition, NumAttributes };
-
-
 void framebufferSizeChanged(GLFWwindow *window, int width, int height);
 
 static void error_callback(int error, const char *description)
@@ -65,17 +60,21 @@ int main()
     fprintf(stdout, "GLEW version: %s\n", glewGetString(GLEW_VERSION));
     fprintf(stdout, "GL version: %s\n", glGetString(GL_VERSION));
 
+    GLCall( glEnable(GL_BLEND) );
+    GLCall( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
+
     // glfwSetFramebufferSizeCallback(window, framebufferSizeChanged);
 
     float positions[] = {
-        -0.5f, -0.5f,  // 0
-         0.5f, -0.5f,  // 1
-         0.5f, 0.5f,   // 2
-        -0.5f, 0.5f,   // 3
+        0.0f, 0.0f, 0.0f, 0.0f, // 0
+        600.0f, 0.0f, 1.0f, 0.0f, // 1
+        600.0f, 480.0f, 1.0f, 1.0f, // 2
+        0.0f, 480.0f, 0.0f, 1.0f  // 3
     };
     VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
     VertexBufferLayout vbl;
+    vbl.AddFloat(2); 
     vbl.AddFloat(2); 
     va.AddBuffer(vb, vbl);
 
@@ -84,9 +83,14 @@ int main()
         2, 3, 0
     };
     IndexBuffer ib(indices, 6);
+    glm::mat4 proj = glm::ortho(0.0f, 600.0f, 0.0f, 480.0f, -1.0f, 1.0f);
+
 
     Shader shaderProgram("res/shaders/Basic.shader");
     shaderProgram.Bind();
+
+    Texture texture("res/textures/gold-dollar.png");
+    texture.Bind(0);
 
     // 清空状态机
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -94,16 +98,17 @@ int main()
     glBindVertexArray(0); 
 
     shaderProgram.SetUniform4f("u_Color", 0.0f, 0.3f, 0.0f, 1.0f);
+    shaderProgram.SetUniform1i("u_Texture", 0);
+    shaderProgram.SetUniformMat4f("u_MVP", proj);
+
+    Renderer renderer;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
 
-        va.Bind();
-        ib.Bind();
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
+        renderer.Draw(va, ib);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

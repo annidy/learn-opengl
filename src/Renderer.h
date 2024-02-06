@@ -3,13 +3,13 @@
 #include <GL/glew.h>
 #include <assert.h>
 
-#define ASSERT(x) if (!(x)) assert(false)
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Debug.h"
 
-#define GLCall(x) GLClearError();\
-    x;\
-    ASSERT(GLCheckError())
-
-void GLClearError();
-bool GLCheckError();
-
-#define INT2VOIDP(i) (void *)(uintptr_t)(i)
+class Renderer
+{
+    public:
+        void Clear() const;
+        void Draw(const VertexArray& va, const IndexBuffer& ib) const;
+};
