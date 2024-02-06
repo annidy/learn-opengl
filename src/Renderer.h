@@ -5,6 +5,7 @@
 
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Debug.h"
 
 class Renderer
 {

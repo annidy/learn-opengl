@@ -10,7 +10,7 @@
             "name": "Debug",
             "program": "${workspaceFolder}/build/src/learn-opengl",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/build/src"
         }
     ]
 }

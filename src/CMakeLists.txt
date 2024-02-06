@@ -10,7 +10,8 @@ pkg_check_modules(GLEW    REQUIRED IMPORTED_TARGET glew)
 pkg_check_modules(GLFW    REQUIRED IMPORTED_TARGET glfw3)
 pkg_check_modules(GLM    REQUIRED IMPORTED_TARGET glm)
 
-set(SRCS main.cpp Renderer.cpp VertexBuffer.cpp IndexBuffer.cpp VertexArray.cpp VertexBuffer.cpp)
+set(SRCS main.cpp Renderer.cpp VertexBuffer.cpp IndexBuffer.cpp VertexArray.cpp VertexBuffer.cpp Texture.cpp)
+list(APPEND SRCS vendor/stb_image/stb_image.cpp)
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-framework Cocoa -framework IOKit -framework Foundation -framework OpenGL -framework CoreVideo")
@@ -22,3 +23,5 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_executable(${PROJECT_NAME}  ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::GLEW PkgConfig::GLFW PkgConfig::GLM)
+
+file(COPY res DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

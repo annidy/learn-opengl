@@ -14,34 +14,37 @@
 #include "Renderer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
+#include "Texture.h"
 
 constexpr auto vertexShaderSource = R"(
     #version 330 core
     
     layout (location = 0) in vec4 aPos;
+    layout (location = 1) in vec2 texCoord;
+
+    out vec2 v_TexCoord;
 
     void main()
     {
         gl_Position = aPos;
+        v_TexCoord = texCoord;
     }
 )";
 
 constexpr auto fragmentShaderSource = R"(
     #version 330 core
 
+    in vec2 v_TexCoord;
     out vec4 FragColor;
 
-    uniform vec4 u_Color;
+    uniform sampler2D u_Texture;
 
     void main()
     {
-        FragColor = u_Color;
+        vec4 texColor = texture(u_Texture, v_TexCoord);
+        FragColor = texColor;
     }
 )";
-
-enum VAO_IDs { Triangles, NumVAOs};
-enum Buffer_IDs { ArrayBuffer, ElementBuffer, NumBuffers };
-enum Attrib_IDs { vPosition, NumAttributes };
 
 unsigned int CompileShader(const std::string &source, unsigned int type)
 {
@@ -123,17 +126,21 @@ int main()
     fprintf(stdout, "GLEW version: %s\n", glewGetString(GLEW_VERSION));
     fprintf(stdout, "GL version: %s\n", glGetString(GL_VERSION));
 
+    GLCall( glEnable(GL_BLEND) );
+    GLCall( glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) );
+
     // glfwSetFramebufferSizeCallback(window, framebufferSizeChanged);
 
     float positions[] = {
-        -0.5f, -0.5f,  // 0
-         0.5f, -0.5f,  // 1
-         0.5f, 0.5f,   // 2
-        -0.5f, 0.5f,   // 3
+        -0.5f, -0.5f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.0f, 1.0f  // 3
     };
     VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
     VertexBufferLayout vbl;
+    vbl.AddFloat(2); 
     vbl.AddFloat(2); 
     va.AddBuffer(vb, vbl);
 
@@ -146,12 +153,15 @@ int main()
     unsigned int shaderProgram = CreateShaderProgram(vertexShaderSource, fragmentShaderSource);
     glUseProgram(shaderProgram);
 
+    Texture texture("res/textures/phone.png");
+    texture.Bind(0);
+
     // 清空状态机
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0); 
 
-    glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), 0.0f, 0.3f, 0.0f, 1.0f);
+    glUniform1i(glGetUniformLocation(shaderProgram, "u_Texture"), 0);
 
     float red = 0.0f;
     float step = 0.05f;
@@ -163,16 +173,7 @@ int main()
     {
         renderer.Clear();
 
-        glUseProgram(shaderProgram);
-        glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), red, 0.3, 0.8, 1.0);
-
         renderer.Draw(va, ib);
-
-        if (red > 1.0f)
-            step = -0.05f;
-        if (red < 0.0f)
-            step = 0.05f;
-        red += step;
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
