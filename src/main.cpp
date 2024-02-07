@@ -72,9 +72,9 @@ int main()
 
     float positions[] = {
         0.0f, 0.0f, 0.0f, 0.0f, // 0
-        600.0f, 0.0f, 1.0f, 0.0f, // 1
-        600.0f, 480.0f, 1.0f, 1.0f, // 2
-        0.0f, 480.0f, 0.0f, 1.0f  // 3
+        100.0f, 0.0f, 1.0f, 0.0f, // 1
+        100.0f, 100.0f, 1.0f, 1.0f, // 2
+        0.0f, 100.0f, 0.0f, 1.0f  // 3
     };
     VertexArray va;
     VertexBuffer vb(positions, sizeof(positions));
@@ -126,7 +126,8 @@ int main()
 #endif
     ImGui_ImplOpenGL3_Init("#version 150");
 
-    glm::vec3 translation(200, 200, 0);
+    glm::vec3 translation1(200, 200, 0);
+    glm::vec3 translation2(100, 100, 0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -138,15 +139,23 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        shaderProgram.Bind();
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
-        glm::mat4 mvp = proj * view * model;
-        shaderProgram.SetUniformMat4f("u_MVP", mvp);
-
-        renderer.Draw(va, ib, shaderProgram);
-
         {
-            ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+            shaderProgram.Bind();
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation1);
+            glm::mat4 mvp = proj * view * model;
+            shaderProgram.SetUniformMat4f("u_MVP", mvp);
+            renderer.Draw(va, ib, shaderProgram);
+        }
+                {
+            shaderProgram.Bind();
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation2);
+            glm::mat4 mvp = proj * view * model;
+            shaderProgram.SetUniformMat4f("u_MVP", mvp);
+            renderer.Draw(va, ib, shaderProgram);
+        }
+        {
+            ImGui::SliderFloat3("Translation 1", &translation1.x, 0.0f, 960.0f);
+            ImGui::SliderFloat3("Translation 2", &translation2.x, 0.0f, 960.0f);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         }
 
