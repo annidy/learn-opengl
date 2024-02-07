@@ -86,6 +86,8 @@ int main()
     IndexBuffer ib(indices, 6);
     glm::mat4 proj = glm::ortho(0.0f, 600.0f, 0.0f, 480.0f, -1.0f, 1.0f);
 
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 300.0f, 0.0f));
+
 
     Shader shaderProgram("res/shaders/Basic.shader");
     shaderProgram.Bind();
@@ -99,7 +101,7 @@ int main()
     glBindVertexArray(0); 
 
     shaderProgram.SetUniform1i("u_Texture", 0);
-    shaderProgram.SetUniformMat4f("u_MVP", proj);
+    shaderProgram.SetUniformMat4f("u_MVP", proj * view);
 
     Renderer renderer;
 
