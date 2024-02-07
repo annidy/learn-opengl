@@ -14,13 +14,17 @@ set(SRCS main.cpp Renderer.cpp VertexBuffer.cpp IndexBuffer.cpp VertexArray.cpp 
 list(APPEND SRCS vendor/stb_image/stb_image.cpp)
 list(APPEND SRCS vendor/imgui/imgui_draw.cpp vendor/imgui/imgui_impl_glfw.cpp vendor/imgui/imgui_tables.cpp vendor/imgui/imgui_widgets.cpp vendor/imgui/imgui.cpp vendor/imgui/imgui_impl_opengl3.cpp)
 
+add_subdirectory(tests)
+
+message(STATUS "SRCS: ${SRCS}")
+
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-framework Cocoa -framework IOKit -framework Foundation -framework OpenGL -framework CoreVideo")
     add_compile_definitions(GL_SILENCE_DEPRECATION)
     add_compile_options(-Wno-unused-command-line-argument)
 endif ()
 
-include_directories(${CMAKE_SOURCE_DIR}/include vendor/imgui)
+include_directories(${CMAKE_SOURCE_DIR}/include vendor/imgui ${CMAKE_CURRENT_LIST_DIR})
 add_executable(${PROJECT_NAME}  ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::GLEW PkgConfig::GLFW PkgConfig::GLM)

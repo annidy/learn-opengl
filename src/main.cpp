@@ -21,6 +21,11 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "tests/TestClearColor.h"
+#include "tests/TestTriangle.h"
+#include "tests/TestUniform.h"
+#include "tests/TestMultipleObjects.h"
+
 
 void framebufferSizeChanged(GLFWwindow *window, int width, int height);
 
@@ -126,8 +131,9 @@ int main()
 #endif
     ImGui_ImplOpenGL3_Init("#version 150");
 
-    glm::vec3 translation1(200, 200, 0);
-    glm::vec3 translation2(100, 100, 0);
+    int currentSelection = -1;
+    int radioSelection = 0;
+    test::Test *test;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -140,24 +146,36 @@ int main()
         ImGui::NewFrame();
 
         {
-            shaderProgram.Bind();
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation1);
-            glm::mat4 mvp = proj * view * model;
-            shaderProgram.SetUniformMat4f("u_MVP", mvp);
-            renderer.Draw(va, ib, shaderProgram);
-        }
-                {
-            shaderProgram.Bind();
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), translation2);
-            glm::mat4 mvp = proj * view * model;
-            shaderProgram.SetUniformMat4f("u_MVP", mvp);
-            renderer.Draw(va, ib, shaderProgram);
-        }
-        {
-            ImGui::SliderFloat3("Translation 1", &translation1.x, 0.0f, 960.0f);
-            ImGui::SliderFloat3("Translation 2", &translation2.x, 0.0f, 960.0f);
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::RadioButton("ClearColor",      &radioSelection, 0); ImGui::SameLine();
+            ImGui::RadioButton("Triangle",        &radioSelection, 1); ImGui::SameLine();
+            ImGui::RadioButton("Uniform",         &radioSelection, 2); ImGui::SameLine();
+            ImGui::RadioButton("MultipleObjects", &radioSelection, 3);
         }
+
+        if (currentSelection != radioSelection)
+        {
+            switch(radioSelection)
+            {
+                case 0 : delete test;
+                         test = new test::TestClearColor();
+                         break;
+                case 1 : delete test;
+                         test = new test::TestTriangle();
+                         break;
+                case 2 : delete test;
+                         test = new test::TestUniform();
+                         break;
+                case 3 : delete test;
+                         test = new test::TestMultipleObjects();
+                         break;
+            }
+            currentSelection = radioSelection;
+        }
+
+        test->OnUpdate(0.0f);
+        test->OnRender();
+        test->OnImGuiRender();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
