@@ -12,6 +12,7 @@ pkg_check_modules(GLM    REQUIRED IMPORTED_TARGET glm)
 
 set(SRCS main.cpp Renderer.cpp VertexBuffer.cpp IndexBuffer.cpp VertexArray.cpp VertexBuffer.cpp Shader.cpp Texture.cpp)
 list(APPEND SRCS vendor/stb_image/stb_image.cpp)
+list(APPEND SRCS vendor/imgui/imgui_draw.cpp vendor/imgui/imgui_impl_glfw.cpp vendor/imgui/imgui_tables.cpp vendor/imgui/imgui_widgets.cpp vendor/imgui/imgui.cpp vendor/imgui/imgui_impl_opengl3.cpp)
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-framework Cocoa -framework IOKit -framework Foundation -framework OpenGL -framework CoreVideo")
@@ -19,7 +20,7 @@ if (APPLE)
     add_compile_options(-Wno-unused-command-line-argument)
 endif ()
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/include vendor/imgui)
 add_executable(${PROJECT_NAME}  ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::GLEW PkgConfig::GLFW PkgConfig::GLM)
