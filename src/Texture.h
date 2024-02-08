@@ -15,6 +15,8 @@ class Texture
         ~Texture();
 
         void Bind(unsigned int slot = 0) const;
+        // 4.5版本可用
+        void BindUnit(unsigned int unit) const;
         void Unbind() const;
 
         inline int GetWidth() const { return m_Width; }

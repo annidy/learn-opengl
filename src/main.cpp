@@ -25,6 +25,7 @@
 #include "tests/TestTriangle.h"
 #include "tests/TestUniform.h"
 #include "tests/TestMultipleObjects.h"
+#include "tests/TestBatchTexture.h"
 
 
 void framebufferSizeChanged(GLFWwindow *window, int width, int height);
@@ -150,7 +151,8 @@ int main()
             ImGui::RadioButton("ClearColor",      &radioSelection, 0); ImGui::SameLine();
             ImGui::RadioButton("Triangle",        &radioSelection, 1); ImGui::SameLine();
             ImGui::RadioButton("Uniform",         &radioSelection, 2); ImGui::SameLine();
-            ImGui::RadioButton("MultipleObjects", &radioSelection, 3);
+            ImGui::RadioButton("MultipleObjects", &radioSelection, 3); ImGui::SameLine();
+            ImGui::RadioButton("BatchTexture", &radioSelection, 4);
         }
 
         if (currentSelection != radioSelection)
@@ -168,6 +170,9 @@ int main()
                          break;
                 case 3 : delete test;
                          test = new test::TestMultipleObjects();
+                         break;
+                case 4 : delete test;
+                         test = new test::TestBatchTexture();
                          break;
             }
             currentSelection = radioSelection;

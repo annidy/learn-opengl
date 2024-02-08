@@ -33,6 +33,11 @@ void Texture::Bind(unsigned int slot) const
     GLCall( glBindTexture(GL_TEXTURE_2D, m_RendererID) );
 }
 
+void Texture::BindUnit(unsigned int unit) const
+{
+    GLCall( glBindTextureUnit(unit, m_RendererID) );
+}
+
 void Texture::Unbind() const
 {
     GLCall( glBindTexture(GL_TEXTURE_2D, 0) );
